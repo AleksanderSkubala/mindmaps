@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { addSubject } from "./scripts";
+import { addSubject, shortcuts } from "./scripts";
 
 export default {
   name: "app",
@@ -26,6 +26,7 @@ export default {
     const stage = this.$refs.stage.getNode();
 
     addSubject(layer, stage);
+    shortcuts(layer, stage);
   },
 };
 </script>

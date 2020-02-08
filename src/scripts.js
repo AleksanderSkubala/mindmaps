@@ -1,6 +1,8 @@
 import Konva from "konva";
 
 let globalStage;
+let subject;
+let objects = [];
 
 const addSubject = (parent, stage) => {
   globalStage = stage;
@@ -10,22 +12,59 @@ const addSubject = (parent, stage) => {
     draggable: true,
   });
   parent.add(main);
+  subject = main;
+
+  main.on('dragmove', updateLines(parent));
+  updateLines(parent);
 
   const mainTxt = new Konva.Text({
-    text: "SUBJECT",
-    fontSize: 30,
-    fontFamily: "Arial",
-    fill: "black",
+    text: "Subject",
+    fontSize: 34,
+    fontFamily: "Roboto",
+    fill: "#000",
     padding: 10,
   });
   const mainBg = new Konva.Rect({
     width: mainTxt.width(),
     height: mainTxt.height(),
-    fill: "#fdcb6e",
+    fill: "#00ff00",
   });
 
   main.add(mainBg);
   main.add(mainTxt);
+
+  editableText(mainTxt, main, parent, mainBg);
+};
+
+const newElement = (parent, stage) => {
+  globalStage = stage;
+  const main = new Konva.Group({
+    x: parent.width() / 2,
+    y: parent.height() / 2,
+    draggable: true,
+  });
+  parent.add(main);
+  objects.push(main);
+
+  main.on('dragmove', updateLines(parent));
+  updateLines(parent);
+
+  const mainTxt = new Konva.Text({
+    text: "element",
+    fontSize: 22,
+    fontFamily: "Roboto",
+    fill: "#fff",
+    padding: 10,
+  });
+  const mainBg = new Konva.Rect({
+    width: mainTxt.width(),
+    height: mainTxt.height(),
+    fill: "#0000ff",
+  });
+
+  main.add(mainBg);
+  main.add(mainTxt);
+  stage.draw();
 
   editableText(mainTxt, main, parent, mainBg);
 };
@@ -131,4 +170,37 @@ const attachTransormer = (parent, el, nodeText) => {
   parent.draw();
 };
 
-export { addSubject, attachTransormer };
+const shortcuts = (parent, stage) => {
+  window.addEventListener("keydown", e => {
+    if (e.ctrlKey && e.which == 191) {
+      newElement(parent, stage);
+    }
+  });
+};
+
+const updateLines = (parent) => {
+  const sx = subject.x();
+  const sy = subject.y();
+  console.log(objects);
+
+  objects.forEach(el => {
+    const ex = el.x();
+    const ey = el.y();
+    const line = new Konva.Arrow({
+      stroke: 'black',
+      id: el.id,
+      fill: 'black'
+    });
+    line.points([ sx, sy, ex, ey ]);
+
+    parent.add(line);
+    // parent.batchDraw();
+  });
+};
+
+export {
+  addSubject,
+  attachTransormer,
+  shortcuts,
+  updateLines,
+};
